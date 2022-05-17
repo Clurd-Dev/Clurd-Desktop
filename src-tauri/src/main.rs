@@ -20,7 +20,28 @@ async fn getfiles(invoke_message: String, path: String) ->  String {
   };
   response_result
 }
-
+#[tauri::command]
+async fn get_config(url: String) ->  String {
+  let response = reqwest::get(url).await;
+  let response_result = match response {
+    Ok(response) => response.text().await.expect("Error during fetch config"),
+    Err(_error) => String::from("0")
+  };
+  response_result
+}
+#[tauri::command]
+async fn remove_fs(url: String, absolute: String) ->  String {
+  let client = reqwest::Client::new();
+  let body = json!({
+    "folder": absolute
+  });
+  let response = client.post(url).body(format!("{}", body)).send().await;
+  let response_result = match response {
+    Ok(response) => response.text().await.expect("CIAO"),
+    Err(_error) => String::from("0")
+  };
+  response_result
+}
 #[tauri::command]
 async fn parse_config() ->  String {
   let contents = fs::read_to_string("./config.json");
@@ -51,9 +72,8 @@ async fn update_config(invoke_message: String) ->  () {
 }
 
 fn main() {
-
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![getfiles,update_config,parse_config])
+    .invoke_handler(tauri::generate_handler![getfiles,update_config,parse_config, get_config, remove_fs])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

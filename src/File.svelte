@@ -1,31 +1,55 @@
 <script lang="ts">
-    import VirtualList from 'svelte-tiny-virtual-list';
     import { onMount } from 'svelte';
     import { load_files } from './ts/io';
-    import Contex from './contex.svelte';
-    import { rightClick, hideMenu } from './ts/menu';
-    let files: Array<object> = [];
+    import { get_config } from './ts/io';
+    import CustomMenu from './context/CustomMenu.svelte';
+    let items: Array<object> = [], only_file: string, current_file: string, path:string, start , end;
     export let url: string;
     onMount(async () => {
-        files = await load_files(url);
+        console.log(url)
+        items = await load_files(url);
+        path = await get_config(url);
+      
     });
-    function contex(e) {
-		let only_file = rightClick(e);
-		//let current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
-	}
 </script>
-<Contex />
-<VirtualList
-    width="100%"
-    height={600}
-    itemCount={files.length}
-    itemSize={64}>
-  <div slot="item" let:index let:style {style}>
-    {#if files[index].md5 != "dir"}
-    <img src="/images/file.png" alt="file" width="64px"/>
-    {:else}
-    <img src="/images/folder.png" alt="folder" width="64px"/>
-    {/if}
-    {files[index].file}
-  </div>
-</VirtualList>
+<svelte:head>
+  <!-- UIkit CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/css/uikit.min.css" />
+
+<!-- UIkit JS -->
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit-icons.min.js"></script>
+</svelte:head>
+
+<ul id="list" >
+{#each  items as file_raw}
+    <li >
+      <CustomMenu></CustomMenu>
+      <div class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
+        <div class="uk-card-media-left uk-cover-container">
+            <img src="/images/file.png" alt="" width="64px">
+           {file_raw.file}
+        </div>
+        <div>
+            <div class="uk-card-body">
+                
+            </div>
+        </div>
+    </div>
+    
+</li>
+{/each}
+</ul>
+
+<style>
+li {
+
+  padding: 0;
+  list-style-type: none;
+}
+ul {
+    padding: 0;
+    list-style-type: none;
+}
+</style>
+

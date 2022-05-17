@@ -16,7 +16,7 @@ tauri-build = { version = "1.0.0-rc.8", features = [] }
 
 [dependencies]
 serde = { version = "1.0.137", features = ["derive"] }
-tauri = { version = "1.0.0-rc.9", features = ["api-all"] }
+tauri = { version = "1.0.0-rc.9", features = ["api-all", "ayatana-tray"] }
 reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde_json = "1.0.81"
