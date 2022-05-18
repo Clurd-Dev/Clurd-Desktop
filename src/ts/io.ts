@@ -8,9 +8,10 @@ export async function parse_config(){
     } 
 };
 
-export async function load_files(url:string){
-    return JSON.parse(await invoke('getfiles',{ invokeMessage: url + '/getfiles', path: "./" }));
+export async function load_files(url:string, path:string){
+    return JSON.parse(await invoke('getfiles',{ invokeMessage: url + '/getfiles', path: path}));
 }
+
 export async function get_config(endpoint: string) {
 	const ENDPOINT = endpoint + '/getconfig';
     try {
@@ -33,7 +34,7 @@ export async function get_information(endpoint: string) {
 	}
 }
 
-export async function remove_fs(path: string, refresh, absolute: string) {
+export async function remove_fs( absolute: string) {
 	const ENDPOINT = 'http://localhost:8000/remove';
     try {
         return JSON.parse(await invoke('remove_fs', {url: ENDPOINT, absolute: absolute}));
@@ -42,14 +43,10 @@ export async function remove_fs(path: string, refresh, absolute: string) {
 		dialogs.alert("Error during removing of path from server");
         return undefined;
     }
-	// const xhr = new XMLHttpRequest();
-	// xhr.open('POST', ENDPOINT, true);
-	// xhr.onreadystatechange = async function () {
-	// 	if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-	// 		checkresponse(this.responseText, refresh, absolute);
-	// 	}
-	// };
-	// xhr.send(JSON.stringify({ folder: path }));
+}
+
+export async function rename_fs(old: string, url: string, new_path: string){
+	await invoke('rename_fs', {old: old, url: url, new:new_path});
 }
 // async function checkresponse(response: string, refresh, absolute) {
 // 	if (response == '1') {

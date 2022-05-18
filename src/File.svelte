@@ -1,55 +1,111 @@
 <script lang="ts">
+
     import { onMount } from 'svelte';
     import { load_files } from './ts/io';
     import { get_config } from './ts/io';
-    import CustomMenu from './context/CustomMenu.svelte';
-    let items: Array<object> = [], only_file: string, current_file: string, path:string, start , end;
-    export let url: string;
+    import { rightClick, hideMenu } from './ts/menu';
+	import Contex from './context/Context.svelte';
+	import { dialogs } from 'svelte-dialogs';
+
+	export let url: string;
+	let items: Array<object> = [], only_file: string, current_file: string, path:string;
+
+    function contex(e) {
+		only_file = rightClick(e);
+		current_file = url + (path.replace('.', '') + rightClick(e));
+	}
+
+	async function change_folder(path_dst:string){
+		path = path + path_dst;
+		items = await load_files(url, path);
+	}
+
+	async function goback() {
+		if (path == './') {
+			dialogs.alert("Can't go back through home");
+		} else {
+			let tempath = path.split('/');
+			tempath.pop();
+			path = tempath.join('/');
+			if (path == '.') {
+				path += '/';
+				items = await load_files(url, path);
+			}
+		}
+	}
+	
     onMount(async () => {
         console.log(url)
-        items = await load_files(url);
         path = await get_config(url);
-      
+		items = await load_files(url, path);
+        document.onclick = hideMenu;
     });
 </script>
-<svelte:head>
-  <!-- UIkit CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/css/uikit.min.css" />
 
-<!-- UIkit JS -->
-<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit-icons.min.js"></script>
-</svelte:head>
+<Contex file={only_file} url={current_file} baseurl={url} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
 
-<ul id="list" >
-{#each  items as file_raw}
-    <li >
-      <CustomMenu></CustomMenu>
-      <div class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
-        <div class="uk-card-media-left uk-cover-container">
-            <img src="/images/file.png" alt="" width="64px">
-           {file_raw.file}
-        </div>
-        <div>
-            <div class="uk-card-body">
-                
-            </div>
-        </div>
-    </div>
-    
-</li>
-{/each}
-</ul>
+<section>
+	<img src="/images/back.png" alt="back" on:click={goback}/>
+	<img src="/images/refresh.png" alt="refresh" on:click={async () => items = await load_files(url,path)}/>
+	<div class="grid-container" on:contextmenu={contex} align="center">
+		{#each items as lsraw}
+			{#if lsraw.md5 == 'dir'}
+				<div
+					class="grid-item"
+					on:click={() => change_folder(lsraw.file + '/')}
+					id={lsraw.file}
+					align="center"
+				>
+					<div id={lsraw.file}>
+						<img src="/images/folder.png" class="icon" alt="folder" id={lsraw.file} />
+					</div>
+					<p>{lsraw.file}</p>
+				</div>
+			{:else}
+				<div
+					class="grid-item"
+					on:contextmenu={contex}
+					id={lsraw.file}
+					align="center"
+				>
+					<div id={lsraw.file}>
+						{#if lsraw.image}
+							<img src="/images/image.png" alt="fileimg" class="icon" id={lsraw.file}/>
+						{:else if lsraw.video}
+							<img src="/images/video.png" alt="filevideo" class="icon" id={lsraw.file}/>
+						{:else if lsraw.audio}
+							<img src="/images/audio.png" alt="fileaudio" class="icon" id={lsraw.file}/>
+						{:else if lsraw.file.split('.')[1] == 'pdf'}
+							<img src="/images/pdf.png" alt="filepdf" class="icon" id={lsraw.file}/>
+						{:else}
+							<img src="/images/file.png" alt="file" class="icon" id={lsraw.file}/>
+						{/if}
+						<p id={lsraw.file}>{lsraw.file}</p>
+					</div>
+				</div>
+			{/if}
+		{/each}
+	</div>
+	<!-- <input type="file" name="dummyname" id="inputdata" />
+	<button on:click={upload}>Upload</button> -->
+	<hr />
+</section>
 
 <style>
-li {
+  .grid-container {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	padding: 10px;
+}
+.grid-item {
+	border: 1px solid rgba(0, 0, 0, 0.8);
+	padding: 20px;
+	font-size: 30px;
+	text-align: center;
+}
+.icon {
+	width: 128px;
+}
 
-  padding: 0;
-  list-style-type: none;
-}
-ul {
-    padding: 0;
-    list-style-type: none;
-}
 </style>
 
