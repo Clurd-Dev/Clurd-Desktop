@@ -1,12 +1,13 @@
 <script lang="ts">
-	export let file: string, url: string, baseurl: string;
+	export let file: string, url: string, baseurl: string, ls: Array<object> ;
 	import './contex.css';
 	import { remove_fs, rename_fs } from '../ts/io';
 	import { dialogs } from 'svelte-dialogs';
 	import { createEventDispatcher } from 'svelte';
+	import Details from '../details.svelte';
 	const dispatch = createEventDispatcher();
 	const opts = {};
-	async function rename(url: string, baseurl: string, file: string, ){
+	async function rename(url: string, baseurl: string, file: string){
 	    let full_path = "./" + url.replace(baseurl + "/", "");
 	    dialogs.prompt("What is the new name of " + file + "? IMPORTANT: Include the extension of file").then((msg)=> {
 	        if(msg[0] == undefined){
@@ -36,7 +37,6 @@
 
 		})
 	}
-
 </script>
 
 <svelte:head>
@@ -52,6 +52,9 @@
 		</li>
 		<li class="rename">
 			<a href="#0" on:click={rename(url, baseurl, file)}><i class="fa fa-rename" aria-hidden="true" /> Rename</a>
+		</li>
+		<li class="details">
+			<a href="#0" on:click={dialogs.modal(Details, {ls: ls, name_file: url, path: "./" + url.replace(baseurl + "/", "") ,file_name: file})}><i class="fa fa-info"/>Details</a>
 		</li>
 	</ul>
 </div>

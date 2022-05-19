@@ -44,9 +44,15 @@ async fn update_config(invoke_message: String) ->  () {
   result
 }
 
+#[tauri::command]
+async fn get_space(url: String, path: String) ->  String {
+  let response = server_io::get_space(url, path).await;
+  response
+}
+
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![getfiles,update_config,parse_config, get_config, remove_fs, rename_fs])
+    .invoke_handler(tauri::generate_handler![getfiles,update_config,parse_config, get_config, remove_fs, rename_fs, get_space])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

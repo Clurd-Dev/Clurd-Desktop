@@ -40,3 +40,17 @@ pub async fn rename_file(old: String, url: String, new_file: String) -> String{
   println!("{}", response_result);
   response_result
 }
+
+pub async fn get_space(url: String, path: String) -> String{
+  let client = reqwest::Client::new();
+  let body = json!({
+    "folder": path
+  });
+  let response = client.post(url).body(format!("{}", body)).send().await;
+  let response_result = match response {
+    Ok(response) => response.text().await.expect("CIAO"),
+    Err(_error) => String::from("0")
+  };
+  println!("{}", response_result);
+  response_result
+}

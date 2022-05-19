@@ -6,9 +6,10 @@
     import { rightClick, hideMenu } from './ts/menu';
 	import Contex from './context/Context.svelte';
 	import { dialogs } from 'svelte-dialogs';
-
+	import { invoke } from '@tauri-apps/api/tauri';
+	import "uikit/dist/css/uikit.css"
 	export let url: string;
-	let items: Array<object> = [], only_file: string, current_file: string, path:string;
+	let items: Array<object> = [], only_file: string, current_file: string, path:string, available: string = "", total: string = "";
 
     function contex(e) {
 		only_file = rightClick(e);
@@ -33,16 +34,18 @@
 			}
 		}
 	}
-	
+
     onMount(async () => {
-        console.log(url)
         path = await get_config(url);
 		items = await load_files(url, path);
+		let temp = JSON.parse(await invoke('get_space', {url: url + '/space', path: path}));
+		available = (parseFloat((parseInt(temp.total) / 1000000000).toFixed(3)) -parseFloat((parseInt(temp.available) / 1000000000).toFixed(3))).toFixed(3);
+		total = (parseInt(temp.total) / 1000000000).toFixed(3);
         document.onclick = hideMenu;
     });
 </script>
 
-<Contex file={only_file} url={current_file} baseurl={url} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
+<Contex file={only_file} url={current_file} baseurl={url} ls={items} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
 
 <section>
 	<img src="/images/back.png" alt="back" on:click={goback}/>
@@ -86,11 +89,17 @@
 			{/if}
 		{/each}
 	</div>
-	<!-- <input type="file" name="dummyname" id="inputdata" />
-	<button on:click={upload}>Upload</button> -->
-	<hr />
+	<br />
 </section>
-
+<footer>
+	<div align="center">
+		<p>Space in use: {available} GB of {total} GB</p>
+	</div>
+	<div class="space">
+		<progress class="uk-progress" value={available} max={total} />
+	</div>
+</footer>
+<br />
 <style>
   .grid-container {
 	display: grid;
@@ -107,5 +116,8 @@
 	width: 128px;
 }
 
-</style>
+.space {
+		margin: 20px;
+	}
 
+</style>
