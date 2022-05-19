@@ -91,5 +91,3 @@ export async function rename_fs(old: string, url: string, new_path: string){
 // 	};
 // 	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
 // }
-
-
