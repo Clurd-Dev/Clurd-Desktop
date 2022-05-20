@@ -1,5 +1,5 @@
 <script lang="ts">
-
+	import { Stretch } from 'svelte-loading-spinners'
     import { onMount } from 'svelte';
     import { load_files } from './ts/io';
     import { get_config } from './ts/io';
@@ -9,7 +9,7 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import "uikit/dist/css/uikit.css"
 	export let url: string;
-	let items: Array<object> = [], only_file: string, current_file: string, path:string, available: string = "", total: string = "";
+	let items: Array<object> = [], only_file: string, current_file: string, path:string, available: string = "", total: string = "", spinner: number = 1;
 
     function contex(e) {
 		only_file = rightClick(e);
@@ -18,7 +18,11 @@
 
 	async function change_folder(path_dst:string){
 		path = path + path_dst;
-		items = await load_files(url, path);
+		spinner = 1;
+		load_files(url, path).then((resp)=>{
+			spinner = 0;
+			items = resp;
+		});
 	}
 
 	async function goback() {
@@ -30,14 +34,25 @@
 			path = tempath.join('/');
 			if (path == '.') {
 				path += '/';
-				items = await load_files(url, path);
+				load_files(url, path).then((resp) => {
+					items = resp;
+				});
+			}else{
+				spinner = 1;
+				load_files(url, path).then((resp)=>{
+					items = resp;
+					spinner = 0;
+				});
 			}
 		}
 	}
 
     onMount(async () => {
         path = await get_config(url);
-		items = await load_files(url, path);
+		load_files(url, path).then((response) => {
+			items = response;
+			spinner = 0;
+		});
 		let temp = JSON.parse(await invoke('get_space', {url: url + '/space', path: path}));
 		available = (parseFloat((parseInt(temp.total) / 1000000000).toFixed(3)) -parseFloat((parseInt(temp.available) / 1000000000).toFixed(3))).toFixed(3);
 		total = (parseInt(temp.total) / 1000000000).toFixed(3);
@@ -45,8 +60,13 @@
     });
 </script>
 
-<Contex file={only_file} url={current_file} baseurl={url} ls={items} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
-
+<Contex file={only_file} url={current_file} baseurl={url} ls={items} current_path={path} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
+{#if spinner == 1}
+	<div align="center" class="spinner">
+		<Stretch size="128" color="#FF3E00" unit="px" duration="2s"/>
+		<p>I'm getting file from server, please wait</p>
+	</div>
+{:else}
 <section>
 	<img src="/images/back.png" alt="back" on:click={goback}/>
 	<img src="/images/refresh.png" alt="refresh" on:click={async () => items = await load_files(url,path)}/>
@@ -100,6 +120,7 @@
 	</div>
 </footer>
 <br />
+{/if}
 <style>
   .grid-container {
 	display: grid;
@@ -120,4 +141,8 @@
 		margin: 20px;
 	}
 
+.spinner{
+	padding: 70px 0;
+	text-align: center;
+}
 </style>

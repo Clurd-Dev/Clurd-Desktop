@@ -1,10 +1,11 @@
 <script lang="ts">
-	export let file: string, url: string, baseurl: string, ls: Array<object> ;
+	export let file: string, url: string, baseurl: string, ls: Array<object>, current_path: string;
 	import './contex.css';
 	import { remove_fs, rename_fs } from '../ts/io';
 	import { dialogs } from 'svelte-dialogs';
 	import { createEventDispatcher } from 'svelte';
 	import Details from '../details.svelte';
+	import FSBrowser from '../browser.svelte';
 	const dispatch = createEventDispatcher();
 	const opts = {};
 	async function rename(url: string, baseurl: string, file: string){
@@ -37,6 +38,9 @@
 
 		})
 	}
+	async function copy(){
+
+	}
 </script>
 
 <svelte:head>
@@ -55,6 +59,18 @@
 		</li>
 		<li class="details">
 			<a href="#0" on:click={dialogs.modal(Details, {ls: ls, name_file: url, path: "./" + url.replace(baseurl + "/", "") ,file_name: file})}><i class="fa fa-info"/>Details</a>
+		</li>
+		<li class="copy">
+			<a href="#0" on:click={() =>
+					dialogs.modal(FSBrowser, {
+						ls: ls,
+						path: current_path,
+						current_name: file,
+						url: url
+					})}
+					>
+				<i class="fa fa-copy" aria-hidden="true" /> Copy/Move to
+			</a>
 		</li>
 	</ul>
 </div>

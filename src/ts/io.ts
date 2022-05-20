@@ -48,46 +48,26 @@ export async function remove_fs( absolute: string) {
 export async function rename_fs(old: string, url: string, new_path: string){
 	await invoke('rename_fs', {old: old, url: url, new:new_path});
 }
-// async function checkresponse(response: string, refresh, absolute) {
-// 	if (response == '1') {
-// 		let confirm;
-// 		do {
-// 			confirm = await dialogs.alert('File deleted successfully');
-// 		} while (confirm);
-// 		refresh(absolute);
-// 	} else {
-// 		let confirm;
-// 		do {
-// 			confirm = await dialogs.alert(
-// 				'File deleted unsuccessfully, check server log to see error and if you think this is a bug open an issue on github.'
-// 			);
-// 		} while (confirm);
-// 	}
-// }
-// export async function copyfs(old_file: string, new_file: string) {
-// 	const ENDPOINT = 'http://localhost:8000/copy';
-// 	const xhr = new XMLHttpRequest();
-// 	xhr.open('POST', ENDPOINT, true);
-// 	xhr.onreadystatechange = async function () {
-// 		if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-// 			if (this.responseText == '1')
-// 				dialogs.alert('File successfully copied').then(() => location.reload());
-// 			else dialogs.alert('File unsuccessfully copied, check the error in log of server or retry');
-// 		}
-// 	};
-// 	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
-// }
 
-// export async function movefs(old_file: string, new_file: string) {
-// 	const ENDPOINT = 'http://localhost:8000/move';
-// 	const xhr = new XMLHttpRequest();
-// 	xhr.open('POST', ENDPOINT, true);
-// 	xhr.onreadystatechange = async function () {
-// 		if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-// 			if (this.responseText == '1')
-// 				dialogs.alert('File successfully moved').then(() => location.reload());
-// 			else dialogs.alert('File unsuccessfully moved, check the error in log of server or retry');
-// 		}
-// 	};
-// 	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
-// }
+export async function copy_fs(old_path: string, new_path: string, url: string){
+    let response = await invoke('copy_fs', {url: url, old:old_path, new: new_path});
+    if (response == 0) {
+        dialogs.alert("Problem during copy of file");
+        return 0;
+    }else{
+        dialogs.alert("File copied");
+        return 1;
+    }
+}
+
+export async function move_fs(old_path: string, new_path: string, url: string){
+    let response = await invoke('move_fs', {url: url, old:old_path, new: new_path});
+    if (response == 0) {
+        dialogs.alert("Problem during copy of file");
+        return 0;
+    }else{
+        dialogs.alert("File moved");
+        return 1;
+    }
+}
+

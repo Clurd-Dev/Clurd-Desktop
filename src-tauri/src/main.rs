@@ -26,6 +26,18 @@ async fn rename_fs(url: String, old: String, new: String) ->  String {
 }
 
 #[tauri::command]
+async fn copy_fs(url: String, old: String, new: String) ->  String {
+  let result = server_io::copy_file(url, old , new).await;
+  result
+}
+
+#[tauri::command]
+async fn move_fs(url: String, old: String, new: String) ->  String {
+  let result = server_io::move_file(url, old , new).await;
+  result
+}
+
+#[tauri::command]
 async fn parse_config() ->  String {
   let config = config_manipolation::parser();
   config
@@ -52,7 +64,9 @@ async fn get_space(url: String, path: String) ->  String {
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![getfiles,update_config,parse_config, get_config, remove_fs, rename_fs, get_space])
+    .invoke_handler(tauri::generate_handler![getfiles,update_config,
+      parse_config, get_config, remove_fs, 
+      rename_fs, get_space, copy_fs, move_fs])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
