@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Router, Link, Route } from "svelte-navigator";
 	import { Stretch } from 'svelte-loading-spinners'
     import { onMount } from 'svelte';
     import { load_files } from './ts/io';
@@ -59,7 +60,6 @@
         document.onclick = hideMenu;
     });
 </script>
-
 <Contex file={only_file} url={current_file} baseurl={url} ls={items} current_path={path} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
 {#if spinner == 1}
 	<div align="center" class="spinner">

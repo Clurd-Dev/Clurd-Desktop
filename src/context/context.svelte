@@ -38,8 +38,21 @@
 
 		})
 	}
-	async function copy(){
-
+	async function download(){
+		fetch(url)
+		.then(resp => resp.blob())
+		.then(blob => {
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.style.display = 'none';
+			a.href = url;
+			a.download = file;
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(url);
+			dialogs.alert('your file has downloaded!'); 
+		})
+		.catch(() => dialogs.alert("Can't download the file."));
 	}
 </script>
 
@@ -70,6 +83,11 @@
 					})}
 					>
 				<i class="fa fa-copy" aria-hidden="true" /> Copy/Move to
+			</a>
+		</li>
+		<li class="download">
+			<a href={url} download>
+				<i class="fa fa-download" aria-hidden="true" /> Download this file
 			</a>
 		</li>
 	</ul>

@@ -21,7 +21,7 @@
 	  <Route>
 		  <Init url={url}/>
 		<Link to="file">{nameserver} - {url}</Link>	  
-</Route>
+	</Route>
 	</main>
-  </Router>
+</Router>
   
