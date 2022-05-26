@@ -25,14 +25,16 @@ async fn rename_fs(url: String, old: String, new: String) ->  String {
   result
 }
 
-#[tauri::command]
-async fn ftp_get(url: String) -> String {
-    sync::get()
-}
 
 #[tauri::command]
 async fn ftp_put(url: String, files_to_upload: String, filename: String) -> String {
     String::from(sync::put(url, files_to_upload, filename))
+}
+
+#[tauri::command]
+async fn download(url: String, path: String, savefolder: String) ->  String {
+  let response = sync::download(url, path, savefolder).await;
+  String::from("sd")
 }
 
 #[tauri::command]
@@ -76,7 +78,7 @@ fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![getfiles,update_config,
       parse_config, get_config, remove_fs, 
-      rename_fs, get_space, copy_fs, move_fs, ftp_get,ftp_put])
+      rename_fs, get_space, copy_fs, move_fs, ftp_put, download])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

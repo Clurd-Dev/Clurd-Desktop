@@ -10,9 +10,12 @@
 	import "uikit/dist/js/uikit.js";
 	import Downloader from './Downloader/Downloader.svelte';
 	export let url: string;
-	let items: Array<object> = [], path:string, spinner: number = 1;
+	let items: Array<object> = [], path:string, spinner: number = 1, path_for_sync: string = "./";
 	async function change_folder(path_dst:string){
-		path = path + path_dst;
+		path = path + "/" + path_dst;
+		console.log(path);
+		path_for_sync = path_for_sync + path_dst;
+		console.log(path_for_sync)
 		spinner = 1;
 		load_files(url, path).then((resp)=>{
 			spinner = 0;
@@ -62,7 +65,7 @@
 <hr/>
 <div align="center">
     <h1>Sync files</h1>
-    <a class="uk-button uk-button-primary" href="#0" on:click={()=> dialogs.modal(Downloader, {})}>Sync files from this directory</a>
+    <a class="uk-button uk-button-primary" href="#0" on:click={()=> dialogs.modal(Downloader, {current_path: path_for_sync, url: url, files: items})}>Sync files from this directory</a>
     <hr/>
     <a class="uk-button uk-button-primary" href="#0" on:click={() => dialogs.modal(Uploader, { name: "world" })}>Upload files here</a>
 </div>

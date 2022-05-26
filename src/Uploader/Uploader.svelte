@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { invoke } from '@tauri-apps/api/tauri';
     import { open } from '@tauri-apps/api/dialog';
     import Circle2 from 'svelte-loading-spinners/dist/ts/Circle2.svelte';
     import { dialogs } from 'svelte-dialogs';
-    let loading: boolean = false, bytes: Array<number>;
+    let loading: boolean = false;
     async function upload(){
         let filename = await open();
         loading = true;
