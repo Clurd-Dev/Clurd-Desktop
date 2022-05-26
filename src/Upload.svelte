@@ -8,11 +8,9 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import "uikit/dist/css/uikit.css";
 	import "uikit/dist/js/uikit.js";
+	import Downloader from './Downloader/Downloader.svelte';
 	export let url: string;
 	let items: Array<object> = [], path:string, spinner: number = 1;
-
-   
-
 	async function change_folder(path_dst:string){
 		path = path + path_dst;
 		spinner = 1;
@@ -64,7 +62,7 @@
 <hr/>
 <div align="center">
     <h1>Sync files</h1>
-    <!-- <a class="uk-button uk-button-primary" href="#0">Sync files from this directory</a> -->
+    <a class="uk-button uk-button-primary" href="#0" on:click={()=> dialogs.modal(Downloader, {})}>Sync files from this directory</a>
     <hr/>
     <a class="uk-button uk-button-primary" href="#0" on:click={() => dialogs.modal(Uploader, { name: "world" })}>Upload files here</a>
 </div>

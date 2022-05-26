@@ -31,10 +31,8 @@ async fn ftp_get(url: String) -> String {
 }
 
 #[tauri::command]
-async fn ftp_put(url: String, files_to_upload: String, bytes: Vec<i8>) -> String {
-    let mut temp = bytes.clone();
-    let u8_bytes = unsafe { &*(&mut temp[..] as *mut[i8] as *mut[u8]) };
-    String::from(sync::put(url, files_to_upload, &u8_bytes))
+async fn ftp_put(url: String, files_to_upload: String, filename: String) -> String {
+    String::from(sync::put(url, files_to_upload, filename))
 }
 
 #[tauri::command]
