@@ -30,12 +30,14 @@
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@tauri-apps/api": "^1.0.0-rc.5",
     "font-awesome": "^4.7.0",
+    "hamsters.js": "^5.4.2",
     "namey-mcnameface": "^1.0.3",
     "sirv-cli": "^2.0.0",
     "svelte-dialogs": "^1.1.0",
     "svelte-loading-spinners": "^0.1.7",
     "svelte-navigator": "^3.1.5",
     "svelte-tiny-virtual-list": "^2.0.3",
-    "uikit": "^3.14.1"
+    "uikit": "^3.14.1",
+    "web-threads": "^1.0.118"
   }
 }

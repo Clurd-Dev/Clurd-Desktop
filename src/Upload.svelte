@@ -1,22 +1,17 @@
 <script lang="ts">
-	import { Router, Link, Route } from "svelte-navigator";
-	import { Stretch } from 'svelte-loading-spinners'
+	import { Stretch } from 'svelte-loading-spinners';
     import { onMount } from 'svelte';
     import { load_files } from './ts/io';
     import { get_config } from './ts/io';
-    import { rightClick, hideMenu } from './ts/menu';
-	import Contex from './context/Context.svelte';
+	import Uploader from './Uploader/Uploader.svelte';
 	import { dialogs } from 'svelte-dialogs';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import "uikit/dist/css/uikit.css";
 	import "uikit/dist/js/uikit.js";
 	export let url: string;
-	let items: Array<object> = [], only_file: string, current_file: string, path:string, available: string = "", total: string = "", spinner: number = 1;
+	let items: Array<object> = [], path:string, spinner: number = 1;
 
-    function contex(e) {
-		only_file = rightClick(e);
-		current_file = url + (path.replace('.', '') + rightClick(e));
-	}
+   
 
 	async function change_folder(path_dst:string){
 		path = path + path_dst;
@@ -56,24 +51,27 @@
 			spinner = 0;
 		});
 		let temp = JSON.parse(await invoke('get_space', {url: url + '/space', path: path}));
-		available = (parseFloat((parseInt(temp.total) / 1000000000).toFixed(3)) -parseFloat((parseInt(temp.available) / 1000000000).toFixed(3))).toFixed(3);
-		total = (parseInt(temp.total) / 1000000000).toFixed(3);
-        document.onclick = hideMenu;
     });
 </script>
 
-	
-<Contex file={only_file} url={current_file} baseurl={url} ls={items} current_path={path} on:rename={async () => items = await load_files(url,path)} on:remove={async () => items = await load_files(url,path)}/>
+
 {#if spinner == 1}
 	<div align="center" class="spinner">
 		<Stretch size="128" color="#FF3E00" unit="px" duration="2s"/>
 		<p>I'm getting file from server, please wait</p>
 	</div>
 {:else}
+<hr/>
+<div align="center">
+    <h1>Sync files</h1>
+    <!-- <a class="uk-button uk-button-primary" href="#0">Sync files from this directory</a> -->
+    <hr/>
+    <a class="uk-button uk-button-primary" href="#0" on:click={() => dialogs.modal(Uploader, { name: "world" })}>Upload files here</a>
+</div>
+<hr/>
 <section>
 	<img src="/images/back.png" alt="back" on:click={goback}/>
-	<img src="/images/refresh.png" alt="refresh" on:click={async () => items = await load_files(url,path)}/>
-	<div class="grid-container" on:contextmenu={contex} align="center">
+	<div class="grid-container" align="center">
 		{#each items as lsraw}
 			{#if lsraw.dir == true}
 				<div
@@ -90,7 +88,6 @@
 			{:else}
 				<div
 					class="grid-item"
-					on:contextmenu={contex}
 					id={lsraw.file}
 					align="center"
 				>
@@ -114,14 +111,6 @@
 	</div>
 	<br />
 </section>
-<footer>
-	<div align="center">
-		<p>Space in use: {available} GB of {total} GB</p>
-	</div>
-	<div class="space">
-		<progress class="uk-progress" value={available} max={total} />
-	</div>
-</footer>
 <br />
 {/if}
 

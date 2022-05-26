@@ -5,7 +5,7 @@
 
 mod server_io;
 mod config_manipolation;
-
+mod sync;
 #[tauri::command]
 async fn getfiles(invoke_message: String, path: String) ->  String {
   let files = server_io::getfiles(path, invoke_message).await;
@@ -23,6 +23,18 @@ async fn remove_fs(url: String, absolute: String) ->  String {
 async fn rename_fs(url: String, old: String, new: String) ->  String {
   let result = server_io::rename_file(old, url, new).await;
   result
+}
+
+#[tauri::command]
+async fn ftp_get(url: String) -> String {
+    sync::get()
+}
+
+#[tauri::command]
+async fn ftp_put(url: String, files_to_upload: String, bytes: Vec<i8>) -> String {
+    let mut temp = bytes.clone();
+    let u8_bytes = unsafe { &*(&mut temp[..] as *mut[i8] as *mut[u8]) };
+    String::from(sync::put(url, files_to_upload, &u8_bytes))
 }
 
 #[tauri::command]
@@ -66,7 +78,7 @@ fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![getfiles,update_config,
       parse_config, get_config, remove_fs, 
-      rename_fs, get_space, copy_fs, move_fs])
+      rename_fs, get_space, copy_fs, move_fs, ftp_get,ftp_put])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

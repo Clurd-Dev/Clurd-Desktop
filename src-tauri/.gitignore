@@ -2,3 +2,5 @@
 # will have compiled files and executables
 /target/
 WixTools
+public/js/hamsters.web.min.js
+public/js/hamsters.web.min.js.map
