@@ -65,7 +65,7 @@
 <hr/>
 <div align="center">
     <h1>Sync files</h1>
-    <a class="uk-button uk-button-primary" href="#0" on:click={()=> dialogs.modal(Downloader, {current_path: path_for_sync, url: url, files: items})}>Sync files from this directory</a>
+    <a class="uk-button uk-button-primary" href="#0" on:click={()=> dialogs.modal(Downloader, {current_path: path_for_sync, url: url, files: items, path: path})}>Sync files from this directory</a>
     <hr/>
     <a class="uk-button uk-button-primary" href="#0" on:click={() => dialogs.modal(Uploader, { name: "world" })}>Upload files here</a>
 </div>
